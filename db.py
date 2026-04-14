@@ -2,9 +2,9 @@ import mysql.connector
 
 def get_connection():
     return mysql.connector.connect(
-        host="172.31.26.116",
-        user="tableau",
-        password="P@ssW0rd#2",
+        host=127.0.0.1",
+        user="your_username",
+        password="YOUR_SECURE_PASSWORD",
         database="auto_bha_kal",
         port=3306
     )
