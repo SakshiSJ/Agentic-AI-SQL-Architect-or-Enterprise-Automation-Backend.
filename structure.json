@@ -1,0 +1,1201 @@
+{
+  "version": "1.0",
+  "phase": "phase_1_live_operations",
+  "description": "Semantic structure for live operational queries on Phase-1 tables only. No assumptions. No default filters.",
+
+  "tables": {
+    "tbl_ap_active_trips": {
+
+  "description": "Stores live vehicle trips currently active inside the plant. Used for real-time monitoring of vehicle stage, movement type (Inbound/Outbound), plant presence, DI attachment, PGI status, weight progression, transporter details, and operational routing information.",
+  "time_column": "DTCREATED",
+
+"authoritative_for": [
+  "LIVE_STATUS",
+  "CURRENT_STATUS",
+  "TRIP_LOOKUP",
+  "YARD_TRACKING",
+  "LOADER_LOOKUP",
+  "PACKER_LOOKUP"
+]
+,
+
+  "primary_key": "ID",
+
+  "allowed_aggregations": ["COUNT"],
+
+  "forbidden_logic": [
+    "JOIN",
+    "SUBQUERY",
+    "CURRENT_DATE",
+    "NOW",
+    "INTERVAL",
+    "TIMESTAMPDIFF"
+  ],
+
+  "columns": {
+
+    "ID": {
+      "data_type": "BIGINT",
+      "description": "Internal unique auto-generated identifier for the trip record"
+    },
+
+    "TRIP_ID": {
+      "data_type": "STRING",
+      "description": "Business trip identifier"
+    },
+
+    "TRIP_STATUS": {
+      "data_type": "ENUM",
+      "enum_name": "TRIP_STATUS",
+      "description": "Lifecycle status of the trip (Active, Closed, etc.)"
+    },
+
+    "TRIP_MODE": {
+      "data_type": "STRING",
+      "description": "Mode of trip creation (Manual / System generated)"
+    },
+
+    "VEHICLE_NO": {
+      "data_type": "STRING",
+      "description": "Vehicle registration number"
+    },
+
+    "PLANT_CODE": {
+      "data_type": "STRING",
+      "description": "Plant code where vehicle is currently present"
+    },
+
+    "PARENT_PLANT_CODE": {
+      "data_type": "STRING",
+      "description": "Parent plant code for hierarchical grouping"
+    },
+
+    "CURRENT_STATUS": {
+      "data_type": "ENUM",
+      "enum_name": "CURRENT_STATUS",
+      "description": "Current operational stage of the vehicle inside the plant"
+    },
+
+    "CURRENT_STAGE_ID": {
+      "data_type": "INTEGER",
+      "description": "Numeric stage identifier"
+    },
+
+    "STAGE_SEQUENCE_ID": {
+      "data_type": "INTEGER",
+      "description": "Sequence order of the current stage"
+    },
+
+    "MOVEMENT_TYPE": {
+      "data_type": "ENUM",
+      "enum_name": "MOVEMENT_TYPE",
+      "description": "Inbound or Outbound vehicle movement"
+    },
+
+    "ON_HOLD": {
+      "data_type": "ENUM",
+      "enum_name": "ON_HOLD",
+      "description": "Indicates whether trip is on hold (Y/N)"
+    },
+
+    "PACK_TYPE": {
+      "data_type": "ENUM",
+      "enum_name": "PACK_TYPE",
+      "description": "Loading category (BAG / BULK)"
+    },
+
+    "MARKETING_CODE": {
+      "data_type": "STRING",
+      "description": "Marketing material code or grade classification"
+    },
+
+    "MANUFACTURING_CODE": {
+      "data_type": "STRING",
+      "description": "Manufacturing code of material"
+    },
+
+    "DI_NO": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Delivery Instruction number attached to trip"
+    },
+
+    "PGI_STATUS": {
+      "data_type": "ENUM",
+      "enum_name": "PGI_STATUS",
+      "nullable": true,
+      "description": "Post Goods Issue processing status"
+    },
+
+    "PGI_DATE": {
+      "data_type": "DATETIME",
+      "nullable": true,
+      "description": "Timestamp when PGI was completed"
+    },
+
+    "FIRST_WT": {
+      "data_type": "DECIMAL",
+      "description": "First weight recorded at weighbridge"
+    },
+
+    "SECOND_WT": {
+      "data_type": "DECIMAL",
+      "description": "Second weight recorded at weighbridge"
+    },
+
+    "NET_WT": {
+      "data_type": "DECIMAL",
+      "description": "Net material weight"
+    },
+
+    "FIRST_WT_TIME": {
+      "data_type": "DATETIME",
+      "nullable": true,
+      "description": "Timestamp of first weight entry"
+    },
+
+    "SECOND_WT_TIME": {
+      "data_type": "DATETIME",
+      "nullable": true,
+      "description": "Timestamp of second weight entry"
+    },
+
+    "FIRST_WEIGHT_WB_NO": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Weighbridge number used for first weight"
+    },
+
+    "SECOND_WEIGHT_WB_NO": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Weighbridge number used for second weight"
+    },
+
+    "TRANSPORTER_CODE": {
+      "data_type": "STRING",
+      "description": "Unique transporter identifier"
+    },
+
+    "TRANSPORTER_NAME": {
+      "data_type": "STRING",
+      "description": "Name of the transporter"
+    },
+
+    "LR_STATUS": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "LR document processing status"
+    },
+
+    "LR_TRANSPORTER_CODE": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "LR transporter code"
+    },
+
+    "ROUTE_NAME": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Route assigned for delivery"
+    },
+
+    "TAT_STATUS": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Turnaround time monitoring status"
+    },
+
+    "BACKHAUL_FLAG": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Indicates whether trip is part of backhaul"
+    },
+
+    "BACKHAUL_LINKED_TRIP": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Linked trip ID for backhaul reference"
+    },
+
+    "ABORTED_REMARKS": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Remarks if trip was aborted"
+    },
+
+    "GW_TOL_APPVD_BY": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "User who approved gross weight tolerance"
+    },
+
+    "PO_RECON_FLAG": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Indicates whether PO reconciliation is completed"
+    },
+
+    "CANCEL_DO_QTY": {
+      "data_type": "DECIMAL",
+      "nullable": true,
+      "description": "Cancelled Delivery Order quantity"
+    },
+
+    "ASN_APPROVE_FLAG": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "ASN approval indicator"
+    },
+
+    "ASN_ID": {
+      "data_type": "BIGINT",
+      "nullable": true,
+      "description": "ASN record identifier"
+    },
+
+    "DTCREATED": {
+      "data_type": "DATETIME",
+      "description": "Trip creation timestamp"
+    },
+
+    "SYSTIME": {
+      "data_type": "DATETIME",
+      "description": "System update timestamp"
+    }
+  }
+}
+,"tbl_ap_plant_device_status": {
+  "description": "Stores plant-level installed devices, their operational status, type, IP, and validity period.",
+  "primary_key": "ID",
+
+  "columns": {
+    "ID": {
+      "data_type": "BIGINT",
+      "description": "Unique device record identifier"
+    },
+
+    "DEVICE_IP": {
+      "data_type": "STRING",
+      "description": "IP address of the device"
+    },
+
+    "DEVICE_NAME": {
+      "data_type": "STRING",
+      "description": "Logical name of the installed device"
+    },
+
+    "DEVICE_STATUS": {
+      "data_type": "ENUM",
+      "enum_name": "DEVICE_STATUS",
+      "description": "Operational status of the device (ON / OFF)"
+    },
+
+    "DEVICE_TYPE": {
+      "data_type": "ENUM",
+      "enum_name": "DEVICE_TYPE",
+      "description": "Type of device such as LED, READER, or APD"
+    },
+
+    "FROM_DATE": {
+      "data_type": "DATETIME",
+      "description": "Date and time when the device became active"
+    },
+
+    "TO_DATE": {
+      "data_type": "DATETIME",
+      "description": "Date and time until which the device record is valid"
+    },
+
+    "TEST_TIME": {
+      "data_type": "DATETIME",
+      "description": "Last test or heartbeat timestamp for the device"
+    },
+
+    "PLANT_CODE": {
+      "data_type": "INTEGER",
+      "description": "Plant where the device is installed"
+    }
+  }
+},
+
+
+
+    
+    
+    "tbl_ap_hist_rep_ob": {
+  "description": "Stores historical outbound dispatch records. Used for dispatch quantity, vehicle trip count, shift-wise summaries, loading category analytics, and TAT based operational reporting.",
+  "time_column": "DTCREATED",
+
+"authoritative_for": [
+  "DISPATCH",
+  "TAT",
+  "QUANTITY",
+  "SHIFT_ANALYTICS",
+  "HIST_TRIP"
+]
+,
+
+  "primary_key": "ID",
+
+  "allowed_aggregations": ["COUNT", "SUM", "AVG", "MAX"],
+
+  "forbidden_logic": [
+    "JOIN",
+    "SUBQUERY",
+    "CURRENT_DATE",
+    "NOW",
+    "INTERVAL",
+    "TIMESTAMPDIFF"
+  ],
+
+  "columns": {
+
+    "ID": { "data_type": "BIGINT" },
+
+    "TRIP_ID": {
+      "data_type": "STRING",
+      "description": "Unique trip identifier"
+    },
+
+    "TRIP_STATUS": { "data_type": "STRING" },
+
+    "PLANT_CODE": {
+      "data_type": "STRING",
+      "description": "Plant from which dispatch occurred"
+    },
+
+    "PARENT_PLANT_CODE": { "data_type": "STRING" },
+
+    "DTCREATED": {
+      "data_type": "DATETIME",
+      "description": "Dispatch creation timestamp"
+    },
+
+    "SHIFT": {
+      "data_type": "ENUM",
+      "enum_name": "SHIFT",
+      "description": "Operational shift (A/B/C)"
+    },
+
+    "VEHICLE_NO": { "data_type": "STRING" },
+
+    "MOVEMENT_TYPE": {
+      "data_type": "ENUM",
+      "enum_name": "MOVEMENT_TYPE"
+    },
+
+    "PACK_TYPE": {
+      "data_type": "ENUM",
+      "enum_name": "PACK_TYPE"
+    },
+
+    "LOAD_CATEGORY": { "data_type": "STRING" },
+
+    "ORDER_TYPE": {
+      "data_type": "ENUM",
+      "enum_name": "ORDER_TYPE"
+    },
+
+    "GRDAE": {
+      "data_type": "STRING",
+      "description": "Material grade (Note: Column name is GRDAE in DB)"
+    },
+
+    "NET_WT": { "data_type": "DECIMAL" },
+    "FIRST_WT": { "data_type": "DECIMAL" },
+    "SECOND_WT": { "data_type": "DECIMAL" },
+
+    "FIRST_WT_TIME": { "data_type": "DATETIME" },
+    "SECOND_WT_TIME": { "data_type": "DATETIME" },
+
+    "FIRST_WEIGHT_WB_NO": { "data_type": "STRING" },
+    "SECOND_WEIGHT_WB_NO": { "data_type": "STRING" },
+
+    "DELIVER_QTY": { "data_type": "DECIMAL" },
+    "TOTAL_QTY": { "data_type": "DECIMAL" },
+    "DI_QTY": { "data_type": "STRING" },
+
+    "DI_NO": { "data_type": "STRING" },
+    "DI_DATETIME": { "data_type": "STRING" },
+    "DI_TAT": { "data_type": "BIGINT" },
+    "TOTAL_DI_TAT": { "data_type": "BIGINT" },
+
+    "YARD_TAT": { "data_type": "BIGINT" },
+    "PLANT_TAT": { "data_type": "BIGINT" },
+    "TOTAL_TAT": { "data_type": "BIGINT" },
+
+    "PGI_STATUS": {
+      "data_type": "ENUM",
+      "enum_name": "PGI_STATUS"
+    },
+
+    "PGI_DATE": { "data_type": "DATETIME" },
+    "PGI_NUMBER": { "data_type": "STRING" },
+    "ALL_PGI_DATE": { "data_type": "STRING" },
+
+    "CUSTOMER_NAME": { "data_type": "STRING" },
+    "DESTINATION": { "data_type": "STRING" },
+
+    "TRANSPORTER_CODE": { "data_type": "STRING" },
+    "TRANSPORTER_NAME": { "data_type": "STRING" },
+
+    "SEQ_LOADER": { "data_type": "STRING" },
+    "SEQ_PACKER": { "data_type": "STRING" },
+    "ACT_LOADER": { "data_type": "STRING" },
+    "ACT_PACKER": { "data_type": "STRING" },
+
+    "READY_QUEUE_TIME": { "data_type": "DATETIME" },
+
+    "DISTRIBUTION_CHANNEL": { "data_type": "STRING" },
+    "DISTRICT": { "data_type": "STRING" },
+
+    "SHIP_TO": { "data_type": "STRING" },
+    "SHIP_TO_CITY": { "data_type": "STRING" },
+    "SHIP_TO_STATE": { "data_type": "STRING" },
+    "SHIPT_TO_TEHSIL": { "data_type": "STRING" },
+    "SHIP_TO_DISTRICT": { "data_type": "STRING" },
+
+    "BACKHAUL_FLAG": { "data_type": "STRING" },
+    "BACKHAUL_LINKED_TRIP": { "data_type": "STRING" },
+
+    "ABORTED_REMARKS": { "data_type": "STRING" },
+
+    "GW_TOL_APPVD_BY": { "data_type": "STRING" },
+
+    "SAP_ORDER_NO": { "data_type": "STRING" },
+    "INVOICE_NO": { "data_type": "STRING" },
+
+    "INV_CNL_FLAG": { "data_type": "STRING" },
+    "INV_CNL_DATE": { "data_type": "STRING" },
+    "INV_CNL_DI_NO": { "data_type": "STRING" },
+    "INV_CNL_GR_CHILD": { "data_type": "STRING" },
+    "INV_CNL_INVOICE_NO": { "data_type": "STRING" },
+    "INV_CNL_QTY": { "data_type": "STRING" },
+
+    "SRT_FLAG": { "data_type": "STRING" },
+    "SRT_TIME": { "data_type": "STRING" },
+    "SRT_INVOICE_NO": { "data_type": "STRING" },
+
+    "E_WAY_BILL": { "data_type": "STRING" },
+    "MRP": { "data_type": "STRING" },
+    "INCOTERM": { "data_type": "STRING" },
+
+    "SYSTIME": { "data_type": "DATETIME" }
+  }
+}
+
+,"tbl_ap_wb_tol_logs": {
+  "description": "Weighbridge tolerance failure log table. Each row represents a tolerance event logged at weighbridge. This table should not be used to derive failure logic using weight comparisons. Every row is treated as a recorded event.",
+  "time_column": "DT_CREATED",
+
+"authoritative_for": [
+  "TOLERANCE",
+  "WEIGHBRIDGE_FAILURE"
+]
+,
+
+  "primary_key": "ID",
+
+  "phase": "PHASE_1",
+
+  "time_column": "DT_CREATED",
+
+  "allowed_aggregations": ["COUNT"],
+
+  "allowed_group_by": [
+    "DT_CREATED",
+    "PARENT_PLANT_CODE",
+    "LOAD_CATEGORY",
+    "MOVEMENT_TYPE",
+    "VEHICLE_NO"
+  ],
+
+  "forbidden_logic": [
+    "WT_DIFF",
+    "ACT_WT",
+    "EXPECTED_WT",
+    "LOWER_LIMIT",
+    "UPPER_LIMIT",
+    "CURRENT_DATE",
+    "INTERVAL",
+    "TIMESTAMPDIFF"
+  ],
+
+  "default_aggregation": {
+    "FUNC": "COUNT",
+    "COLUMN": "TRIP_ID",
+    "DISTINCT": true
+  },
+
+  "columns": {
+
+    "ID": { "data_type": "BIGINT" },
+
+    "TRIP_ID": { "data_type": "STRING" },
+
+    "VEHICLE_NO": { "data_type": "STRING" },
+
+    "PARENT_PLANT_CODE": { "data_type": "STRING" },
+
+    "DT_CREATED": { "data_type": "DATETIME" },
+
+    "MOVEMENT_TYPE": { "data_type": "STRING" },
+
+    "LOAD_CATEGORY": { "data_type": "STRING" },
+
+    "WT_TYPE": { "data_type": "STRING" },
+
+    "ACT_WT": { "data_type": "DECIMAL" },
+    "EXPECTED_WT": { "data_type": "DECIMAL" },
+    "LOWER_LIMIT": { "data_type": "DECIMAL" },
+    "UPPER_LIMIT": { "data_type": "DECIMAL" },
+    "WT_DIFF": { "data_type": "DECIMAL" },
+
+    "WT_TIME": { "data_type": "DATETIME" },
+
+    "IS_APPROVED": { "data_type": "STRING" },
+    "APPROVED_BY": { "data_type": "STRING" },
+    "GW_APPROVAL_TIME": { "data_type": "DATETIME" },
+    "TOL_APPROVE": { "data_type": "STRING" },
+
+    "REMARKS": { "data_type": "STRING" },
+
+    "WEB_NO": { "data_type": "STRING" }
+  },
+
+  "semantic_rules": {
+    "EVENT_NATURE": "FAILURE_LOG",
+    "FAILURE_ROWS_ARE_PRECOMPUTED": true,
+    "DO_NOT_DERIVE_FAILURE_USING_WEIGHT_COLUMNS": true
+  }
+}
+,
+
+    
+
+    "vw_active_trip": {
+      "description": "View containing active vehicle trips with material grade and loading category details. Used for grade-wise and loading category-wise operational queries.",
+      "primary_key": "TRIP_ID",
+      "columns": {
+        "ID": { "data_type": "BIGINT", "description": "Internal unique identifier" },
+        "TRIP_ID": { "data_type": "BIGINT", "description": "Unique trip identifier" },
+        "PLANT_CODE": { "data_type": "INTEGER", "description": "Plant where the vehicle is present" },
+        "VEHICLE_NO": { "data_type": "STRING", "description": "Vehicle registration number" },
+        "ORDER_TYPE": {"data_type": "STRING","description": "Order type associated with the trip such as STO or SO"},
+        "TRANSPORTER_NAME": {
+  "data_type": "STRING",
+  "description": "Transporter name associated with the trip (available in vw_active_trip)"
+},
+
+
+        "NUMBER_OF_WHEELS": {"data_type": "INTEGER","description": "Number of wheels of the vehicle"},
+       "CURRENT_STATUS": { "data_type": "ENUM", "enum_name": "CURRENT_STATUS", "description": "Current operational stage of the vehicle" },
+        "MOVEMENT_TYPE": { "data_type": "ENUM", "enum_name": "MOVEMENT_TYPE", "description": "Inbound or outbound movement" },
+        "TRIP_STATUS": { "data_type": "ENUM", "enum_name": "TRIP_STATUS", "description": "Lifecycle status of the trip" },
+        "ON_HOLD": { "data_type": "ENUM", "enum_name": "ON_HOLD", "description": "Indicates whether the trip is on hold" },
+        "GRADE": { "data_type": "ENUM", "enum_name": "GRADE", "description": "Material grade (PPC / OPC / OPC43Gr)" },
+        "PACK_TYPE": { "data_type": "ENUM", "enum_name": "PACK_TYPE", "description": "Loading category (Bag / Bulk)" },
+        "VEHICLE_OWNERSHIP_TYPE": {"data_type": "STRING", "description": "Ownership type of the vehicle such as Market or Dedicated"
+},
+"SEQ_PACKER": {
+  "data_type": "INTEGER",
+  "description": "Packer sequence assigned to the trip"
+},
+"SEQ_LOADER": {
+  "data_type": "INTEGER",
+  "description": "Loader sequence assigned to the trip"
+},
+"FIRST_WT": {
+  "data_type": "DECIMAL",
+  "description": "First recorded weight for the trip (raw stored value)"
+},
+"NET_WT": {
+      "data_type": "DECIMAL",
+      "description": "Net weight of the trip (denormalized in view)"},
+"SECOND_WT": {
+  "data_type": "DECIMAL",
+  "description": "Second recorded weight for the trip (raw stored value)"
+}
+
+
+      }
+    },"tbl_vc_ap_reject_revoke_hist_mst": {
+  "description": "Stores rejected and revoked order history along with transporter and reason details.",
+  "primary_key": "ID",
+  "columns": {
+    "ID": {
+      "data_type": "BIGINT",
+      "description": "Unique record identifier"
+    },
+    "ORDER_ID": {
+      "data_type": "STRING",
+      "description": "Order identifier"
+    },
+    "TRANSPORTER_NAME": {
+      "data_type": "STRING",
+      "description": "Name of the transporter"
+    },
+    "ACTION_TYPE": {
+      "data_type": "ENUM",
+      "enum_name": "ACTION_TYPE",
+      "description": "Order action type (REJECTED / REVOKED)"
+    },
+    "ACTION_DATE": {
+      "data_type": "DATETIME",
+      "description": "Date when order was rejected or revoked"
+    },
+    "REASON": {
+      "data_type": "STRING",
+      "description": "Reason for rejection or revocation"
+    },
+    "PLANT_CODE": {
+      "data_type": "INTEGER",
+      "description": "Plant associated with the order"
+    }
+  }
+},
+"tbl_ap_outword_failed_integration": {
+  "description": "Stores outbound integration requests with their processing status such as SUCCESS or FAILURE.",
+  "primary_key": "ID",
+  "columns": {
+    "ID": { "data_type": "BIGINT" },
+    "REQUEST_STATUS": {
+      "data_type": "ENUM",
+      "enum_name": "REQUEST_STATUS",
+      "description": "Status of the integration request"
+    },
+    "REQUEST_TYPE": {
+      "data_type": "STRING",
+      "description": "Type of integration request"
+    },
+    "REQUEST_SENT_DATE": {
+      "data_type": "DATETIME",
+      "description": "Date and time when request was sent"
+    },
+    "RETRY_COUNT": {
+      "data_type": "INTEGER",
+      "description": "Number of retries attempted"
+    },
+    "VEHICLE_NO": {
+      "data_type": "STRING",
+      "description": "Vehicle number involved in the integration"
+    }
+  }
+}
+
+
+  },
+  "tbl_po_detail": {
+  "description": "Stores purchase order details including supplier, material, and PO information.",
+  "primary_key": "poID",
+
+  "columns": {
+    "poID": {
+      "data_type": "BIGINT",
+      "description": "Internal PO record identifier"
+    },
+
+    "poNumber": {
+      "data_type": "STRING",
+      "description": "Purchase Order number"
+    },
+
+    "materialCode": {
+      "data_type": "STRING",
+      "description": "Material code in the PO"
+    },
+
+    "materialDescription": {
+      "data_type": "STRING",
+      "description": "Material description"
+    },
+
+    "supplierCode": {
+      "data_type": "STRING",
+      "description": "Supplier code"
+    },
+
+    "supplierName": {
+      "data_type": "STRING",
+      "description": "Supplier name"
+    },
+
+    "plantName": {
+      "data_type": "STRING",
+      "description": "Plant name for which PO is created"
+    },
+
+    "poStatus": {
+      "data_type": "STRING",
+      "description": "Status of the purchase order"
+    }
+  }
+},
+
+"tbl_ap_loader_master": {
+  "description": "Master table storing loader, packer, belt, and queue configuration for each plant. Used for loader-wise, packer-wise, capacity, and status related operational queries. Static configuration data.",
+  "primary_key": "ID",
+
+  "columns": {
+    "ID": {
+      "data_type": "BIGINT",
+      "description": "Auto-increment unique identifier for loader master record"
+    },
+
+    "LOADER_ID": {
+      "data_type": "STRING",
+      "description": "Unique loader identifier"
+    },
+
+    "LOADER_ALIAS": {
+      "data_type": "STRING",
+      "description": "Logical alias name of the loader"
+    },
+
+    "LOADER_CATEGORY": {
+      "data_type": "ENUM",
+      "enum_name": "PACK_TYPE",
+      "description": "Loader category such as BAG or BULK"
+    },
+
+    "LOADER_STATUS": {
+      "data_type": "ENUM",
+      "enum_name": "LOADER_STATUS",
+      "description": "Operational status of loader (ACTIVE / INACTIVE)"
+    },
+
+    "PACKER_NO": {
+      "data_type": "STRING",
+      "description": "Packer number mapped to the loader"
+    },
+
+    "PACKER_ALIAS": {
+      "data_type": "STRING",
+      "description": "Logical alias name of the packer"
+    },
+
+    "BELT_ID": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Belt identifier associated with the loader"
+    },
+
+    "BELT_NAME": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Name of the belt associated with the loader"
+    },
+
+    "MIN_ALLOWABLE_QTY": {
+      "data_type": "INTEGER",
+      "description": "Minimum allowable loading quantity for the loader"
+    },
+
+    "MAX_ALLOWABLE_QTY": {
+      "data_type": "INTEGER",
+      "description": "Maximum allowable loading quantity for the loader"
+    },
+
+    "QUEUE_LENGTH": {
+      "data_type": "INTEGER",
+      "description": "Maximum number of vehicles allowed in queue for the loader"
+    },
+
+    "AP_PLANT_CODE": {
+      "data_type": "STRING",
+      "description": "Plant code where the loader is configured"
+    },
+
+    "INACTIVE_REMARK": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "Remarks entered when loader is marked inactive"
+    },
+
+    "ADDED_BY": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "User who created the loader configuration"
+    },
+
+    "MODIFIED_BY": {
+      "data_type": "STRING",
+      "nullable": true,
+      "description": "User who last modified the loader configuration"
+    },
+
+    "createdDate": {
+      "data_type": "DATETIME",
+      "description": "Timestamp when the loader record was created"
+    },
+
+    "MODIFIED_DATE": {
+      "data_type": "DATETIME",
+      "nullable": true,
+      "description": "Timestamp when the loader record was last modified"
+    }
+  }
+},
+
+
+  
+
+  "enums": {
+    "CURRENT_STATUS": ["YardIn", "GateIn", "MainEntry", "LoadingIn", "TareWeight", "GrossWeight", "YardOut"],
+    "MOVEMENT_TYPE": ["INBOUND", "OUTBOUND"],
+    "TRIP_STATUS": ["A"],
+    "ON_HOLD": ["Y", "N"],
+    "SHIFT": ["A", "B", "C"],
+    "ORDER_TYPE": ["STO", "SO"],
+    "DEVICE_STATUS": ["ON", "OFF"],
+"DEVICE_TYPE": ["LED", "READER", "APD"],
+
+
+    "PACK_TYPE": ["BAG", "BULK"],
+    "PGI_STATUS": ["COMPLETED"],
+    "GRADE": ["PPC", "OPC", "OPC43Gr"],
+    "TOLERANCE_STATUS": ["PASS", "FAIL"],
+    "ACTION_TYPE": ["REJECTED", "REVOKED"],
+    "REQUEST_STATUS": ["SUCCESS", "FAILURE"],
+    "LOADER_STATUS": ["ACTIVE", "INACTIVE"]
+
+
+
+
+  },
+
+  "business_terms": {
+    "yard": { "CURRENT_STATUS": "YardIn" },
+    "yard entry": { "CURRENT_STATUS": "YardIn" },
+    "gatein": { "CURRENT_STATUS": "GateIn" },
+    "main entry": { "CURRENT_STATUS": "MainEntry" },
+    "loading": { "CURRENT_STATUS": "LoadingIn" },
+    "tareweight": { "CURRENT_STATUS": "TareWeight" },
+    "grossweight": { "CURRENT_STATUS": "GrossWeight" },
+    "yardout": { "CURRENT_STATUS": "YardOut" },
+    "inbound": { "MOVEMENT_TYPE": "INBOUND" },
+    "outbound": { "MOVEMENT_TYPE": "OUTBOUND" },
+    "bag": { "PACK_TYPE": "BAG" },
+    "bulk": { "PACK_TYPE": "BULK" },
+    "di attached": { "DI_NO": "NOT_NULL" },
+    "grade wise": {
+  "COLUMN": "GRADE",
+  "GROUP_BY": "GRADE"
+},
+
+    "without di": { "DI_NO": "NULL" },
+    "pgi completed": { "PGI_STATUS": "COMPLETED" },
+    "pgi not completed": {
+  "PGI_STATUS": "COMPLETED",
+  "NEGATION": true
+},"default_aggregation": {
+  "FUNC": "COUNT",
+  "COLUMN": "VEHICLE_NO",
+  "DISTINCT": true
+},"default_aggregation": {
+  "FUNC": "COUNT",
+  "COLUMN": "VEHICLE_NO",
+  "DISTINCT": true
+}
+,
+
+
+    "second weight": {
+  "SELECT": ["SECOND_WT"]
+},
+"gross weight": {
+  "SELECT": ["SECOND_WT"]
+},
+
+    "material registration completed": {
+  "PGI_STATUS": "COMPLETED"
+},"first weight": {
+  "SELECT": ["FIRST_WT"]
+},
+"tolerance_rules": {
+  "ALLOW_WHERE": ["PARENT_PLANT_CODE"],
+  "ALLOW_GROUP_BY": ["DT_CREATED", "PARENT_PLANT_CODE"],
+  "FORBIDDEN_COLUMNS": [
+    "WT_DIFF",
+    "LOWER_LIMIT",
+    "UPPER_LIMIT",
+    "ACT_WT",
+    "EXPECTED_WT"
+  ],
+  "DEFAULT_AGGREGATION": {
+    "FUNC": "COUNT",
+    "COLUMN": "TRIP_ID",
+    "DISTINCT": true
+  }
+}
+,
+"truck type": {
+  "GROUP_BY": "NUMBER_OF_WHEELS"
+}
+,"loading type wise": {
+  "GROUP_BY": "PACK_TYPE"
+}
+,
+"market vehicles": {
+  "VEHICLE_OWNERSHIP_TYPE": "MARKET"
+},
+"dedicated vehicles": {
+  "VEHICLE_OWNERSHIP_TYPE": "DEDICATED"
+},
+"sto": {
+  "ORDER_TYPE": "STO"
+},
+"so": {
+  "ORDER_TYPE": "SO"
+},
+"loader": {
+  "SELECT": ["SEQ_LOADER"]
+},
+
+"per packer": {
+  "GROUP_BY": "SEQ_PACKER"
+},
+"packer wise": {
+  "GROUP_BY": "SEQ_PACKER"
+},
+"per loader": {
+  "GROUP_BY": "SEQ_LOADER"
+},
+"packer": { "SELECT": ["SEQ_PACKER"] },
+"wheel": { "SELECT": ["NUMBER_OF_WHEELS"] },
+"ownership": { "SELECT": ["VEHICLE_OWNERSHIP_TYPE"] },
+"grade": {
+  "COLUMN": "GRADE"
+},
+
+
+
+"number of trucks": {
+  "AGGREGATION": "COUNT",
+  "COLUMN": "VEHICLE_NO"
+},
+"trucks loaded": {
+  "AGGREGATION": "COUNT",
+  "COLUMN": "VEHICLE_NO"
+},
+
+
+
+
+    "ppc": { "GRADE": "PPC" },
+    "opc": { "GRADE": "OPC" },
+    "opc43gr": { "GRADE": "OPC43Gr" },
+    
+    "grade type wise": { "GROUP_BY": "GRADE" },
+    
+    "loading category wise": { "GROUP_BY": "PACK_TYPE" },
+
+    "dispatch quantity": {
+  "AGGREGATION": "SUM",
+  "COLUMN": "NET_WT"
+},
+"total dispatch": {
+  "AGGREGATION": "SUM",
+  "COLUMN": "NET_WT"
+},
+"dispatch count": {
+  "AGGREGATION": "COUNT",
+  "COLUMN": "VEHICLE_NO"
+},
+"dispatch date wise": {
+  "GROUP_BY": "DISPATCH_DATE"
+},
+"shift wise": {
+  "GROUP_BY": "SHIFT"
+},
+"plant wise": {
+  "GROUP_BY": "PLANT_CODE"
+},
+"grade wise": {
+  "GROUP_BY": "GRADE"
+},
+"pack type wise": {
+  "GROUP_BY": "PACK_TYPE"
+},
+"order type wise": {
+  "GROUP_BY": "ORDER_TYPE"
+},
+"active": {
+  "DEVICE_STATUS": "ON"
+},
+"inactive": {
+  "DEVICE_STATUS": "OFF"
+},
+"deactive": {
+  "DEVICE_STATUS": "OFF"
+},
+"device list": {
+  "SELECT": ["DEVICE_NAME", "DEVICE_STATUS"]
+},"rejected orders": {
+  "ACTION_TYPE": "REJECTED"
+},
+"revoked orders": {
+  "ACTION_TYPE": "REVOKED"
+},
+"by transporter": {
+  "GROUP_BY": "TRANSPORTER_NAME"
+},
+"list of orders": {
+  "SELECT": ["ORDER_ID", "TRANSPORTER_NAME", "ACTION_TYPE", "ACTION_DATE", "REASON"]
+},
+"integration failure": {
+  "REQUEST_STATUS": "FAILURE"
+},
+"integration failed": {
+  "REQUEST_STATUS": "FAILURE"
+},
+"integration failure count": {
+  "AGGREGATION": "COUNT",
+  "COLUMN": "ID"
+},"po no": {
+  "SELECT": ["poNumber"]
+},
+"purchase order": {
+  "SELECT": ["poNumber"]
+},
+
+"material": {
+  "SELECT": ["materialCode", "materialDescription"]
+},
+"material wise": {
+  "SELECT": ["materialCode", "materialDescription"]
+},
+"wise": {
+  "MODE": "GROUP_BY_SINGLE_COLUMN"
+},
+
+"grade wise": {
+  "COLUMN": "GRADE",
+  "GROUP_BY": "GRADE",
+  "TABLE": "vw_active_trip"
+},
+
+"loading category wise": {
+  "COLUMN": "PACK_TYPE",
+  "GROUP_BY": "PACK_TYPE",
+  "TABLE": "tbl_ap_active_trips"
+},
+
+"pack type wise": {
+  "COLUMN": "PACK_TYPE",
+  "GROUP_BY": "PACK_TYPE",
+  "TABLE": "tbl_ap_active_trips"
+},
+
+"order type wise": {
+  "COLUMN": "ORDER_TYPE",
+  "GROUP_BY": "ORDER_TYPE",
+  "TABLE": "vw_active_trip"
+},
+
+"vehicle ownership wise": {
+  "COLUMN": "VEHICLE_OWNERSHIP_TYPE",
+  "GROUP_BY": "VEHICLE_OWNERSHIP_TYPE",
+  "TABLE": "vw_active_trip"
+},
+
+"movement wise": {
+  "COLUMN": "MOVEMENT_TYPE",
+  "GROUP_BY": "MOVEMENT_TYPE"
+},
+
+"transporter wise": {
+  "COLUMN": "TRANSPORTER_NAME",
+  "GROUP_BY": "TRANSPORTER_NAME"
+}
+,"loader assigned": {
+  "SELECT": ["SEQ_LOADER"],
+  "TABLE": "vw_active_trip"
+},
+
+"packer assigned": {
+  "SELECT": ["SEQ_PACKER"],
+  "TABLE": "vw_active_trip"
+},
+
+"loader wise": {
+  "GROUP_BY": "SEQ_LOADER",
+  "TABLE": "vw_active_trip"
+},
+
+"packer wise": {
+  "GROUP_BY": "SEQ_PACKER",
+  "TABLE": "vw_active_trip"
+}
+,"daily": {
+  "GROUP_BY": "DT_CREATED",
+  "TABLE": "tbl_ap_wb_tol_logs"
+},
+"weekly": {
+  "GROUP_BY": "DT_CREATED",
+  "TABLE": "tbl_ap_wb_tol_logs"
+},
+"monthly": {
+  "GROUP_BY": "DT_CREATED",
+  "TABLE": "tbl_ap_wb_tol_logs"
+}
+,"wheel type": {
+  "COLUMN": "NUMBER_OF_WHEELS",
+  "GROUP_BY": "NUMBER_OF_WHEELS",
+  "TABLE": "vw_active_trip"
+},
+"wheel type wise": {
+  "COLUMN": "NUMBER_OF_WHEELS",
+  "GROUP_BY": "NUMBER_OF_WHEELS",
+  "TABLE": "vw_active_trip"
+}
+,
+
+"supplier": {
+  "SELECT": ["supplierName"]
+},
+"supplier wise": {
+  "SELECT": ["supplierName"]
+},"tare weight": {
+  "SELECT": ["FIRST_WT"]
+},
+"net weight": {
+  "SELECT": ["NET_WT"]
+}
+,"transporter name": {
+  "SELECT": ["TRANSPORTER_NAME"]
+},"tolerance failed": {
+  "TABLE": "tbl_ap_wb_tol_logs",
+  "COLUMN": "TRIP_ID"
+},
+"failed tolerance": {
+  "TABLE": "tbl_ap_wb_tol_logs",
+  "COLUMN": "TRIP_ID"
+},
+
+"tolerence fail": {
+  "TABLE": "tbl_ap_wb_tol_logs",
+  "COLUMN": "TRIP_ID"
+},
+"tolerence failed": {
+  "TABLE": "tbl_ap_wb_tol_logs",
+  "COLUMN": "TRIP_ID"
+},
+"failed tolerence": {
+  "TABLE": "tbl_ap_wb_tol_logs",
+  "COLUMN": "TRIP_ID"
+},"plant tolerance": {
+  "TABLE": "tbl_ap_wb_tol_logs",
+  "COLUMN": "PARENT_PLANT_CODE"
+}
+
+
+
+}
+
+
+
+
+
+  }
